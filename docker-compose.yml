@@ -40,13 +40,40 @@ services:
     ports:
       - 3307:3306
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data_order:/var/lib/mysql
 
     networks:
       - microservice-network
 
+  payment:
+    build:
+      context: ./payment-service
+      dockerfile: dockerfile.payment
+    command: npm run start:dev
+    volumes:
+      - ./payment-service:/payment
+    ports:
+      - 3002:3002
+    depends_on:
+      - mysql-payment
+    networks:
+      - microservice-network
+
+  mysql-payment:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payment
+    ports:
+      - 3007:3306
+    volumes:
+      - db_data_payment:/var/lib/mysql
+    networks:
+      - microservice-network
+
 volumes:
-  db_data:
+  db_data_order:
+  db_data_payment:
 
 networks:
   microservice-network:
