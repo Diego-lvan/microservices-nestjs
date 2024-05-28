@@ -6,5 +6,5 @@ export class DbConstants {
   static DB_USER: string = process.env.DB_USER || 'root';
   static DB_PASSWORD: string = process.env.DB_PASSWORD || 'root';
   static DB_NAME: string = process.env.DB_NAME || 'orders_DB';
-  static DB_SYNC: boolean = process.env.DB_SYNC === 'true';
+  static DB_SYNC: boolean = true;
 }
