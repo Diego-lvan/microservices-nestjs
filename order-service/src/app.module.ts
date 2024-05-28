@@ -16,7 +16,7 @@ import { ServerConstants } from './constants/server.constants';
         name: 'SERVICE_PAYMENT',
         transport: Transport.TCP,
         options: {
-          host: 'localhost',
+          host: 'payment',
           port: ServerConstants.SERVICE_PAYMENT_PORT,
         },
       },
