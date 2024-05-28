@@ -1,0 +1,11 @@
+FROM node:18
+
+RUN mkdir -p /order
+
+
+WORKDIR /order
+
+
+
+
+
