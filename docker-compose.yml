@@ -1,6 +1,7 @@
 version: "3.7"
 
 services:
+  #gateway service
   gateway:
     build:
       context: ./gateway
@@ -10,3 +11,43 @@ services:
       - ./gateway:/gateway
     ports:
       - 3000:3000 # Map host port 3001 to container port 3000
+    depends_on:
+      - order
+    networks:
+      - microservice-network
+  #orders service
+  order:
+    build:
+      context: ./order-service
+      dockerfile: dockerfile.order
+    command: npm run start:dev
+    volumes:
+      - ./order-service:/order
+    ports:
+      - 3001:3001
+    depends_on:
+      - mysql-order
+    networks:
+      - microservice-network
+
+  # mysql-orders service
+  mysql-order:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: order
+      MYSQL_PASSWORD: root
+    ports:
+      - 3307:3306
+    volumes:
+      - db_data:/var/lib/mysql
+
+    networks:
+      - microservice-network
+
+volumes:
+  db_data:
+
+networks:
+  microservice-network:
+    driver: bridge
