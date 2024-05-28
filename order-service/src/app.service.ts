@@ -30,10 +30,10 @@ export class AppService {
     return newOrder;
   }
 
-  async find(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.findOne({
-      where: { orderId: parseInt(orderId, 10) },
-    });
+  async find(orderId: any): Promise<Order> {
+    const id = Number(orderId?.id);
+
+    const order = await this.orderRepository.findOneBy({ orderId: id });
 
     if (!order) {
       throw new RpcException('Order not found');
