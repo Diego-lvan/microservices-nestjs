@@ -13,10 +13,11 @@ export class AppService {
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
 
-    @Inject('SERVICE_PAYMENT') private readonly clientPayMicroservice: ClientProxy,
-  ){}
+    @Inject('SERVICE_PAYMENT')
+    private readonly clientPayMicroservice: ClientProxy,
+  ) {}
 
-  async createOrder(payload: any){
+  async createOrder(payload: any) {
     const newOrder = this.orderRepository.create();
     newOrder.name = payload.name;
     newOrder.phone = payload.phone;
@@ -24,15 +25,17 @@ export class AppService {
 
     await this.orderRepository.save(newOrder);
 
-    logger.log('New order created with id '+ newOrder.orderId)
+    logger.log('New order created with id ' + newOrder.orderId);
 
     return newOrder;
   }
 
   async find(orderId: string): Promise<Order> {
-    const order = await this.orderRepository.findOne({where: {orderId: parseInt(orderId,10)}});
+    const order = await this.orderRepository.findOne({
+      where: { orderId: parseInt(orderId, 10) },
+    });
 
-    if(!order){
+    if (!order) {
       throw new RpcException('Order not found');
     }
 
@@ -46,63 +49,61 @@ export class AppService {
   }
 
   async cancel(orderId: number): Promise<UpdateResult> {
-    const order = await this.orderRepository.findOne({where : {orderId: orderId}});
+    const order = await this.orderRepository.findOne({
+      where: { orderId: orderId },
+    });
 
-    if(!order){
+    if (!order) {
       throw new RpcException('Order not found');
     }
 
+    return this.orderRepository.update({ orderId }, { status: 'CANCELLED', updateTimestamp: new Date() });
+  }
+
+  async confirm(orderId: number, paymentData: any): Promise<UpdateResult> {
     return this.orderRepository.update(
-      {orderId},
-      {status: "CANCELLED", updateTimestamp: new Date()},
+      { orderId },
+      {
+        status: paymentData.status === 'DECLINED' ? 'CANCELED' : 'CONFIRMED',
+        updateTimestamp: new Date(),
+        paymentId: paymentData.id,
+      },
     );
   }
 
-  async confirm(orderId:number, paymentData: any): Promise<UpdateResult>{
-    return this.orderRepository.update(
-      {orderId},
-      {
-        status: paymentData.status === 'DECLINED' ? 'CANCELED': 'CONFIRMED',
-        updateTimestamp: new Date(),
-        paymentId: paymentData.id
-      }
-    )
-  }
+  async pay(orderId: number) {
+    const order = await this.orderRepository.findOne({
+      where: { orderId: orderId },
+    });
 
-  async pay(orderId: number){
-    const order = await this.orderRepository.findOne({where: {orderId: orderId}});
-    const self = this;
-
-    if(!order){
-      throw new RpcException("Order not found");
+    if (!order) {
+      throw new RpcException('Order not found');
     }
 
-    const pattern = {cmd: 'pay'};
-    const payload = {id: orderId, orderData: order};
+    const pattern = { cmd: 'pay' };
+    const payload = { id: orderId, orderData: order };
 
     logger.log('Prepare payment for order with id ' + order.orderId);
 
-    return this.clientPayMicroservice
-    .send<string>(pattern, payload)
-    .pipe(
+    return this.clientPayMicroservice.send<string>(pattern, payload).pipe(
       map((message: any) => {
         this.confirm(orderId, message);
 
-        switch(message.status){
+        switch (message.status) {
           case 'DECLINED':
             logger.log('Status order: CANCELED');
             break;
-          default :
+          default:
             logger.log('Status order: CONFIRMED');
             logger.log('Please wait 5 seconds to deliver order...');
 
             setTimeout(() => {
               this.orderRepository.update(
-                {orderId},
+                { orderId },
                 {
                   status: 'DELIVERED',
-                  updateTimestamp: new Date()
-                }
+                  updateTimestamp: new Date(),
+                },
               );
               logger.log('Status order: DELIVERED');
             }, 5000);
@@ -110,7 +111,7 @@ export class AppService {
         }
 
         return message;
-      })
-    )
+      }),
+    );
   }
 }

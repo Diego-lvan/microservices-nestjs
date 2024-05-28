@@ -1,4 +1,4 @@
-import {TypeOrmModuleOptions} from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DbConstants } from '../constants/db.constants';
 import { Order } from 'src/entities/order.entity';
 
@@ -12,4 +12,4 @@ export const ORMconfig: TypeOrmModuleOptions = {
   entities: [Order],
   synchronize: DbConstants.DB_SYNC,
   logging: true,
-}
+};

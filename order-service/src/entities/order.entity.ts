@@ -1,9 +1,9 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
-  orderId: number
+  orderId: number;
 
   @Column()
   name: string;
@@ -17,12 +17,12 @@ export class Order {
   @Column({ default: 'NEW' })
   status: string;
 
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createTimestamp: Date;
 
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updateTimestamp: Date;
 
-  @Column({default:() => 0})
-  paymentId: number; 
+  @Column({ default: () => 0 })
+  paymentId: number;
 }
