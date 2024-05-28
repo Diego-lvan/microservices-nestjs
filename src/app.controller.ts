@@ -8,7 +8,7 @@ export class AppController {
 
   @MessagePattern({cmd: 'create'})
   create(data: any){
-    return this.appService.createOrder(data.orderName, data.orderPhone, data.orderPrice);
+    return this.appService.createOrder(data);
   }
 
   @MessagePattern({cmd: 'find'})

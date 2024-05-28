@@ -16,11 +16,11 @@ export class AppService {
     @Inject('SERVICE_PAYMENT') private readonly clientPayMicroservice: ClientProxy,
   ){}
 
-  async createOrder(orderName: string, orderPhone: string, orderPrice: number){
+  async createOrder(payload: any){
     const newOrder = this.orderRepository.create();
-    newOrder.name = orderName;
-    newOrder.phone = orderPhone;
-    newOrder.price = orderPrice;
+    newOrder.name = payload.name;
+    newOrder.phone = payload.phone;
+    newOrder.price = payload.price;
 
     await this.orderRepository.save(newOrder);
 
