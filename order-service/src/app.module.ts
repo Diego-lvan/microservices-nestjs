@@ -13,14 +13,14 @@ import { ServerConstants } from './constants/server.constants';
     TypeOrmModule.forFeature([Order]),
     ClientsModule.register([
       {
-        name: "SERVICE_PAYMENT",
+        name: 'SERVICE_PAYMENT',
         transport: Transport.TCP,
         options: {
-          host: "localhost",
-          port: ServerConstants.SERVICE_PAYMENT_PORT
-        }
-      }
-    ])
+          host: 'localhost',
+          port: ServerConstants.SERVICE_PAYMENT_PORT,
+        },
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [AppService],
