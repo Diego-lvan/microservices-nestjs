@@ -23,10 +23,10 @@ export class AppService {
     const payment = this.paymentRepository.create();
     payment.orderId = paramData.orderData.id;
     payment.price = paramData.orderData.price;
-    payment.status = Math.random() >= 0.5 ? 'CONFIRMED' : 'DECLINED';
+    payment.status = Math.random() >= 0.9 ? 'CONFIRMED' : 'DECLINED';
     await this.paymentRepository.save(payment);
-    logger.log('Payment status: ' + payment.status);   
-    
+    logger.log('Payment status: ' + payment.status);
+
     return payment;
   }
 
